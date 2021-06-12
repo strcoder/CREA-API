@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "DEBUG=app:* nodemon",
-    "start": "tsc && node build/index.js"
+    "build": "tcs",
+    "start": "node build/index.js"
   },
   "repository": {
     "type": "git",
