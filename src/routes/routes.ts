@@ -1,4 +1,6 @@
 import authApi from './auth';
+import teamApi from './team';
+import userApi from './user';
 import { createAuthSchema } from '../utils/schemas/auth';
 
 const routes = (app: any) => {
@@ -7,6 +9,16 @@ const routes = (app: any) => {
     app,
     '/api/auth',
     createAuthSchema,
+  );
+
+  teamApi(
+    app,
+    {}
+  );
+
+  userApi(
+    app,
+    {}
   );
 }
 

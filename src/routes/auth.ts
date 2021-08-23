@@ -6,6 +6,7 @@ import AuthServices from '../services/auth';
 import validationHandler from'./../utils/middleware/validationHandler';
 import { config } from'./../config';
 import './../utils/auth/strategies/basic'; // Basic strategy
+import UserServices from '../services/user';
 
 const authApi = (app: any, route: string, registerSchema: any) => {
   const router = express.Router();
@@ -28,6 +29,7 @@ const authApi = (app: any, route: string, registerSchema: any) => {
           const payload = {
             sub: id,
             email,
+            user: key
           }
           const token = jwt.sign(payload, config.authJwtSecret, {
             expiresIn: '60m'
@@ -45,6 +47,7 @@ const authApi = (app: any, route: string, registerSchema: any) => {
 
   router.post(`/sign-up`, validationHandler(registerSchema), async (req, res, next) => {
     const { body: user } = req;
+    const userService = new UserServices('user');
     try {
       const emailDistinct = await authService.getAuthDistinct({ attribute: 'email' });
       const listEmail = emailDistinct.map((d: string) => d.toLowerCase());
@@ -55,8 +58,47 @@ const authApi = (app: any, route: string, registerSchema: any) => {
         });
         return;
       } else {
+        const days = [
+          {
+            day: 'Lunes',
+            list: [],
+          },
+          {
+            day: 'Martes',
+            list: [],
+          },
+          {
+            day: 'Miercoles',
+            list: [],
+          },
+          {
+            day: 'Jueves',
+            list: [],
+          },
+          {
+            day: 'Viernes',
+            list: [],
+          },
+          {
+            day: 'Sabado',
+            list: [],
+          },
+          {
+            day: 'Domingo',
+            list: [],
+          }
+        ];
+        const newUser = {
+          name: user.name,
+          email: user.email,
+          lastname: user.lastname,
+          schedule: days,
+          meetings: days,
+        };
+        const createUserId = await userService.createUser({ user: newUser });
         const auth = {
           email: user.email,
+          user: createUserId,
           password: user.password,
         }
         const authId = await authService.createAuth({ auth });
