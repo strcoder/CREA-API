@@ -27,6 +27,8 @@ class Services {
 
   async updateOne({ objectId, object }: { objectId: string, object: object }) {
     const updatedObjectId = await this.mongoDB.update(this.collection, objectId, object);
+    const teamData = await this.mongoDB.getById(this.collection, objectId);
+    updatedObjectId.unshift(teamData);
     return updatedObjectId;
   }
 

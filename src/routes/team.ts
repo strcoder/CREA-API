@@ -146,12 +146,28 @@ const api = (app: any, scopes: any) => {
     validationHandler({ objectId: teamIdSchema }, 'params'),
     validationHandler(updateTeamSchema),
     async (req, res, next) => {
+      const userServices = new UserServices('user');
       const { objectId } = req.params;
       const { body: object } = req;
       try {
-        const updatedId = await services.updateOne({ objectId, object });
+        const [team] = await services.updateOne({ objectId, object });
+        if (team?.members?.length > 0) {
+          const users = await Promise.all(team?.members?.map((userId: string) => {
+            return userServices.getUser({ userId });
+          }));
+          const aux = users.map((user: any) => {
+            delete user.team;
+            return user;
+          })
+          team.members = aux;
+        }
+        if (team?.manager) {
+          const manager = await userServices.getUser({ userId: team?.manager });
+          delete manager?.team;
+          team.manager = manager;
+        }
         res.status(200).json({
-          data: updatedId,
+          data: team,
           message: `${collection} updated`,
         });
       } catch (error) {

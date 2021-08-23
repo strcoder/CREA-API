@@ -5,7 +5,7 @@ export const teamIdSchema = idSchema;
 const teamNameSchema = joi.string();
 const teamManagerSchema = idSchema;
 const teamMemebersSchema = joi.array().items(idSchema);
-const teamMeetingsSchema = joi.array().items(joi.object({ day: joi.string(), list: joi.string() }));
+const teamMeetingsSchema = joi.array().items(joi.object({ day: joi.string(), list: joi.array().items(joi.string()) }));
 
 export const createTeamSchema = {
   name: teamNameSchema.required(),
